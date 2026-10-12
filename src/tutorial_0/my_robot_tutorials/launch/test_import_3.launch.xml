@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="arg1" default="2"/>
+  <arg name="arg2" default="3"/>
+
+  <node pkg="my_robot_tutorials"
+        exec="test_import_3"
+        name="test_import_3"
+        output="screen">
+    <param name="arg1" value="$(var arg1)"/>
+    <param name="arg2" value="$(var arg2)"/>
+  </node>
+</launch>

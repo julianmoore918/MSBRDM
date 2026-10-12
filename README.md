@@ -1,93 +1,175 @@
-# MSBRDM-Lecture-2026
+# Multi-sensory Based Robot Dynamic Manipulation
 
+These repository contains the content for the course Multi-sensory Based Robot Dynamic manipulation.
+It will be updated throughout the Winter 2026/27 semester.
 
+## Materials
+The lecture slides and tutorial instructions are accessible from the [wiki page](https://gitlab.lrz.de/msbrdm/msbrdm-lecture-2026/-/wikis/home).
 
-## Getting started
+## Q&A
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+We use the [issues page](https://gitlab.lrz.de/msbrdm/msbrdm-lecture-2026/-/issues) for questions and discussions.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Feel free to discuss among yourself, or tag us with a question about lecture questions, doubts about tutorials etc., but please refrain from posting your solutions.
 
-## Add your files
+## Homework
 
-* [Create](https://docs.gitlab.com/user/project/repository/web_editor/#create-a-file) or [upload](https://docs.gitlab.com/user/project/repository/web_editor/#upload-a-file) files
-* [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
+You will use this [git](https://git-scm.com/) repository for solving and submitting homeworks. 
+
+Your personal "fork" of the [base repo](https://gitlab.lrz.de/msbrdm/msbrdm-lecture-2026) (`<your_name>_ws`) contains all the code.
+
+You will [pull](https://git-scm.com/docs/git-pull) new assignments from our base repo (`upstream`) and [push](https://git-scm.com/docs/git-push) your changes to your personal repo (`origin`) to submit your solutions. That way, you "download" our new assignment from the base repo to your computer and then "upload" your solution to your GitLab repo for grading.
+
+#### Request your repository
+
+- Please send a email to [msbrdm-lecture.ics@xcit.tum.de]() to request access to the repository, if you don't have the access yet.
+- We will create a forked repository for you and add you as developer.
+
+#### Setup your repository
+
+Once you have access to the forked repository, you can clone it to local. Navigate to the page of your workspace and clone with
+
+```console
+$ git clone git@gitlab.lrz.de:msbrdm/student-workspaces-2026/<your_name>_ws.git
+```
+
+Note: we recommend to use [ssh keys](https://docs.gitlab.com/ee/user/ssh.html) to communicate with the remote repos to avoid typing your username and password each time.
+
+#### Adding upstream
+
+In order to regularly pull the new assignments and any other changes (bugfixes), you must add the original [base repo](https://gitlab.lrz.de/msbrdm/msbrdm-lecture-2026) as `upstream` remote.
+
+To do this, navigate to your cloned project's directory and use the following commands from the console:
+
+First check the original setup with:
+
+```console
+$ git remote -v
+```
+
+The output should be:
+
+```console
+> origin  git@gitlab.lrz.de:msbrdm/student-workspaces-2026/<your_name>_ws.git (fetch)
+> origin  git@gitlab.lrz.de:msbrdm/student-workspaces-2026/<your_name>_ws.git (push)
+```
+
+which tells us, that remote with the name origin (your GitLab repo) points to your local repo. To add the [base repo](https://gitlab.lrz.de/msbrdm/msbrdm-lecture-2026) use:
+
+```console
+$ git remote add upstream git@gitlab.lrz.de:msbrdm/msbrdm-lecture-2026.git
+```
+
+This command adds a the base repo as `upstream`. Again, you can verify that it was added:
+
+```console
+$ git remote -v
+> origin  git@gitlab.lrz.de:msbrdm/student-workspaces-2026/<your_name>_ws.git (fetch)
+> origin  git@gitlab.lrz.de:msbrdm/student-workspaces-2026/<your_name>_ws.git (push)
+> upstream  git@gitlab.lrz.de:msbrdm/msbrdm-lecture-2026.git (fetch)
+> upstream  git@gitlab.lrz.de:msbrdm/msbrdm-lecture-2026.git (push)
+```
+
+With this configuration, your local `git` repo can now talk to two independent remote `git` repositories:
+
+- `origin` is your repo on GitLab, where you commit your homework results
+- `upstream` is our repo on GitLab, where we publish new assignments
+
+#### Getting new assignments
+
+If you want to get the new assignments or other changes, go to your project directory and use:
+
+```console
+$ git pull upstream main    # download and merge our changes to your local repo
+```
+
+This first connects to our server and downloads the information from the base project, where we publish the homeworks to. Then, it merges our `upstream/main` contents into your local `main` branch. For new assignments, we always use new files, so this should work without any merge conflicts.
+
+However, if both of us changed the same file, a merge conflict might happen if the changes aren't compatible, in which case you need to resolve the conflict before you can start working.
+
+#### Submit your homework
+
+Generally, this is the work flow of doing your home work
+
+```console
+$ git pull upstream main        # get the new homework assignment from us
+# ~~ do the homework ~~
+$ git status                      # see how git thinks about your files
+$ git add ....                    # add the changes you want to commit
+$ git commit -m "my submission"   # create the commit
+$ git push origin main          # upload the changes to your GitLab repository
+```
+
+You can make as many commits as you want before the deadline.
+
+After you finish, get your latest commits with:
+
+```console
+$ git log
+```
+
+Copy the your latest commit information (see example below) and send us via email [msbrdm-lecture.ics@xcit.tum.de]() before the deadline.
 
 ```
-cd existing_repo
-git remote add origin https://gitlab.lrz.de/msbrdm/msbrdm-lecture-2026.git
-git branch -M main
-git push -uf origin main
+> commit 3e20d97cf20a9e1c6b3be0dfaf89ee4c1715c3bd (HEAD -> main, origin/main, origin/HEAD)
+> Author: Wenlan Shen <wenlan.shen@tum.de>
+> Date:   Tue Oct 17 23:30:11 2026 +0200
+
+    T1 submission 
+  ...
 ```
 
-## Integrate with your tools
+For each tutorial, we will grade the commit you send with email. You could still make changes afterwards to make the later tutorials work, but they will not be counted in grading. Note that the submission after the deadline can only get at most 90% of the total points, and 80% for longer delays (> 1 week).
 
-* [Set up project integrations](https://gitlab.lrz.de/msbrdm/msbrdm-lecture-2026/-/settings/integrations)
 
-## Collaborate with your team
+## Docker Image of Ubuntu 24.04 and ROS noetic
+We provide a docker image for those who don't have Ubuntu 24.04 and ROS 2 Jazzy installed.
 
-* [Invite team members and collaborators](https://docs.gitlab.com/user/project/members/)
-* [Create a new merge request](https://docs.gitlab.com/user/project/merge_requests/creating_merge_requests/)
-* [Automatically close issues from merge requests](https://docs.gitlab.com/user/project/issues/managing_issues/#closing-issues-automatically)
-* [Enable merge request approvals](https://docs.gitlab.com/user/project/merge_requests/approvals/)
-* [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
+### Setup
+#### Prerequisites
+- Make sure you have the latest docker installed before starting: https://docs.docker.com/engine/install/ubuntu/
+- Install Nvidia-Container-SDK if you have Nvidia GPU.
+- Install Docker and Dev Containers extensions in VS Code.
 
-## Test and Deploy
+#### Pull the docker image
+- Pull the docker image
+```bash
+# PULL
+docker login gitlab.lrz.de:5005
+docker pull gitlab.lrz.de:5005/msbrdm/msbrdm-lecture-2026/tum-ics-ros:jazzy-ics-msbrdm-devel-vscode
+docker tag gitlab.lrz.de:5005/msbrdm/msbrdm-lecture-2026/tum-ics-ros:jazzy-ics-msbrdm-devel-vscode tum-ics-ros:jazzy-ics-msbrdm-devel-vscode
+```
+#### Usage
+- Open your workspace in VS code.
+- There should be a pop-up asking if you want to reopen in devcontainer -> click yes. If not, press Ctrl + Shift + p, type and find command "Dev containers: Rebuild and Reopen in Container" and click it.
+- You should see "Dec Container: msbrdm_tutorial_ws" on the lower left corner of your VS Code window, if the build is successful.
+- Note: if you don't have Nvidia GPU, comment out the tags `--runtime=nvidia` (line 23) in `.devcontainer/devcontainer.json`.
+- If you want to use the terminals in VS Code, source the setup script in the terminals
+```bash
+source setup_devcont.sh
+```
+- If you want to attach your host terminals to the docker container, add the following to your **host** `~/.bash_aliases`
+```bash
+devcont_bash()
+{
+    local CONT_NAME=$1
+    docker exec -it $CONT_NAME runuser -u devel -- bash -c "cd \$CONT_PWD && export CONT_PWD_AUTO_SOURCE_SETUP=true && bash"
+}
 
-Use the built-in continuous integration in GitLab.
+devcont_bash_complete()
+{
+    local contNames=($(docker ps --format "{{.Names}}"))
 
-* [Get started with GitLab CI/CD](https://docs.gitlab.com/ci/quick_start/)
-* [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
-* [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/topics/autodevops/requirements/)
-* [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/user/clusters/agent/)
-* [Set up protected environments](https://docs.gitlab.com/ci/environments/protected_environments/)
+    COMPREPLY=()
 
-***
+    local word="${COMP_WORDS[COMP_CWORD]}"
 
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+    if [ "$COMP_CWORD" -eq 1 ]; then
+        COMPREPLY=($(compgen -W "${contNames[*]}" -- "$word"));
+    fi
+}
+```
+Then you can use the following command to access the running container on your local terminals
+```bash
+devcont_bash <your_name>_ws_devcont
+```
