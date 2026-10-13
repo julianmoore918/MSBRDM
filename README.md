@@ -92,12 +92,12 @@ However, if both of us changed the same file, a merge conflict might happen if t
 Generally, this is the work flow of doing your home work
 
 ```console
-$ git pull upstream main        # get the new homework assignment from us
+$ git pull upstream main          # get the new homework assignment from us
 # ~~ do the homework ~~
 $ git status                      # see how git thinks about your files
-$ git add ....                    # add the changes you want to commit
+$ git add .                       # add the changes you want to commit
 $ git commit -m "my submission"   # create the commit
-$ git push origin main          # upload the changes to your GitLab repository
+$ git push origin main            # upload the changes to your GitLab repository
 ```
 
 You can make as many commits as you want before the deadline.
