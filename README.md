@@ -122,7 +122,7 @@ Copy the your latest commit information (see example below) and send us via emai
 For each tutorial, we will grade the commit you send with email. You could still make changes afterwards to make the later tutorials work, but they will not be counted in grading. Note that the submission after the deadline can only get at most 90% of the total points, and 80% for longer delays (> 1 week).
 
 
-## Docker Image of Ubuntu 24.04 and ROS noetic
+## Docker Image of Ubuntu 24.04 and ROS jazzy
 We provide a docker image for those who don't have Ubuntu 24.04 and ROS 2 Jazzy installed.
 
 ### Setup
