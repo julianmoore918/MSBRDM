@@ -25,7 +25,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'test_import_1 = my_robot_tutorials.test_import_1',
+            'test_import_1 = my_robot_tutorials.test_import_1:main',
             'test_import_2 = my_robot_tutorials.test_import_2:main',
             'test_import_3 = my_robot_tutorials.test_import_3:main',
         ],

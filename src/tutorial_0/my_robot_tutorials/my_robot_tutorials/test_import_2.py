@@ -22,6 +22,9 @@ def main(args=None):
     lib3instance.calculate(node)
     
     print("End of script")
+
+    node.destroy_node()
+    rclpy.shutdown()
     
 if __name__ == '__main__':
     main()
