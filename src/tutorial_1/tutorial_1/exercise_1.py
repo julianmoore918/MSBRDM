@@ -21,9 +21,11 @@ def main():
     T2_0[0:3, 3] = [0.5, -0.3, -0.4]
     T2_0[0:3, 0:3] = Rzyx(np.pi/2, 0, 0)
 
+    F = np.diag([1, 1, -1])
+    #to flip z-axis
     T3_0 = np.eye(4)
     T3_0[0:3, 3] = [0.5, 0.3, -0.4]
-    T3_0[0:3, 0:3] = Rzyx(-np.pi/2, 0, np.pi)
+    T3_0[0:3, 0:3] = Rzyx(-np.pi/2, 0, np.pi) @ F
 
     T4_0 = np.eye(4)
     T4_0[0:3, 3] = [-0.5, 0.3, -0.4]
@@ -31,7 +33,7 @@ def main():
 
     T5_0 = np.eye(4)
     T5_0[0:3, 3] = [-0.5, -0.3, 0.4]
-    T5_0[0:3, 0:3] = Rzyx(0, 0, 0)
+    T5_0[0:3, 0:3] = Rzyx(0, 0, 0) @ F
 
     T6_0 = np.eye(4)
     T6_0[0:3, 3] = [0.5, -0.3, 0.4]
@@ -66,12 +68,10 @@ def main():
     # mark the origin of these frames with a magenta circle and
     # propose the proper coordinate frames to fix this problem.
 
-    #H_5 cant just be rotated since it is a left handed frame, so we need to rotate it and then mirror it to make it right handed.
-
     # Plot the cage
     fig_1 = plt.figure()
     ax = fig_1.add_subplot(111, projection='3d')
-    ax.set_title("Cage with Left handed O3 and O7 (in Magenta)")
+    ax.set_title("Cage with Left handed O3 and O5 (in Magenta)")
 
     plot.cage(ax, HT_list_1)
     for T in (T3_0, T5_0):
@@ -93,18 +93,16 @@ def main():
 
     H2_0 = T2_0.copy() 
 
-    F = np.diag([1, 1, -1])
-    #to flip z-axis
     T3_0 = np.eye(4)
     T3_0[0:3, 3] = [0.5, 0.3, -0.4]
-    T3_0[0:3, 0:3] = Rzyx(-np.pi/2, 0, np.pi) @ F
+    T3_0[0:3, 0:3] = Rzyx(np.pi, 0, 0)
     H3_0 = T3_0.copy()
 
     H4_0 = T4_0.copy()
 
     T5_0 = np.eye(4)
     T5_0[0:3, 3] = [-0.5, -0.3, 0.4]
-    T5_0[0:3, 0:3] = Rzyx(0, 0, 0) @ F
+    T5_0[0:3, 0:3] = Rzyx(np.pi/2, 0, np.pi)
     H5_0 = T5_0.copy()
 
     H6_0 = T6_0.copy()
@@ -211,6 +209,7 @@ def main():
     H6_0 = H5_0 @ H6_5
     H7_0 = H6_0 @ H7_6
     H8_0 = H7_0 @ H8_7
+
 
     # Compare with the manually computed absolute transforms (HT_list_2, Q3)
     HT_rel = [np.eye(4), H1_0, H2_0, H3_0, H4_0, H5_0, H6_0, H7_0, H8_0]
