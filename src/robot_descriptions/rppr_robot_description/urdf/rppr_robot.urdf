@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <robot name="rppr_robot">
-<!-- robot description -->
+<!-- robot description, joint origins computed with rppr_from_H.py from the Figure 3 dimensions -->
 
   <link name="world"/>
 
   <joint name="base_link_joint" type="fixed">
     <parent link="world"/>
     <child link="base_link"/>
+    <!-- Origin at the top of the column (L1, L2, L3 from the world frame), turned 180 deg about z so the arm points along -x_w -->
     <origin xyz="0.3 0.34 0.583" rpy="0 0 3.14159265359"/>
   </joint>
 
@@ -15,6 +16,7 @@
       <geometry>
         <mesh filename="package://rppr_robot_description/meshes/Base.stl"/>
       </geometry>
+      <!-- Given in the template, rotates the Base.stl mesh upright -->
       <origin xyz="0.0 0.0 0.0" rpy="1.57079632679 0.0 3.1416"/>
       <material name="grey">
         <color rgba="0.8 0.8 0.8 1"/>
@@ -24,9 +26,11 @@
 
   <joint name="q1_joint" type="revolute">
     <axis xyz="0 0 -1"/>
+    <!-- Plus and minus 90 deg so the arm stays above the column -->
     <limit effort="30" velocity="1.0" lower="-1.57079632679" upper="1.57079632679"/>
     <parent link="base_link"/>
     <child link="q1_link"/>
+    <!-- Hub centre on the q1 shaft (figure L4 = 80 mm, moved to 110 mm so the hub does not overlap the base stub), z along the shaft -->
     <origin xyz="0.0 0.11 0.0" rpy="-1.57079632679 0.0 0.0"/>
   </joint>
 
@@ -35,6 +39,7 @@
       <geometry>
         <mesh filename="package://rppr_robot_description/meshes/q1.stl"/>
       </geometry>
+      <!-- Mesh origin already lies on the joint frame -->
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <material name="grey">
         <color rgba="0.8 0.8 0.8 1"/>
@@ -44,9 +49,11 @@
 
   <joint name="q2_joint" type="prismatic">
     <axis xyz="0 0 1"/>
+    <!-- Starts after the 20 mm q1 flange so the slider does not enter it, 0.1 m travel keeps it on the rail -->
     <limit effort="30" velocity="0.1" lower="0.02" upper="0.1"/>
     <parent link="q1_link"/>
     <child link="q2_link"/>
+    <!-- Slider start L5 = 80 mm from the q1 axis, z along the arm -->
     <origin xyz="0.08 0.0 0.0" rpy="1.57079632679 0.0 1.57079632679"/>
   </joint>
 
@@ -55,6 +62,7 @@
       <geometry>
         <mesh filename="package://rppr_robot_description/meshes/q2.stl"/>
       </geometry>
+      <!-- Mesh origin already lies on the joint frame -->
       <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
       <material name="grey">
         <color rgba="0.8 0.8 0.8 1"/>
@@ -64,9 +72,11 @@
 
   <joint name="q3_joint" type="prismatic">
     <axis xyz="0 0 1"/>
+    <!-- Starts after the 20 mm q2 flange so the slider does not enter it, 0.1 m travel keeps it on the rail -->
     <limit effort="30" velocity="0.1" lower="0.02" upper="0.1"/>
     <parent link="q2_link"/>
     <child link="q3_link"/>
+    <!-- Slider start L7 = 82 mm below the arm and slider plus L6 minus tube radius = 218 mm along it, z pointing down -->
     <origin xyz="0.0815 0.0 0.2177" rpy="1.57079632679 0.0 1.57079632679"/>
   </joint>
 
@@ -75,6 +85,7 @@
       <geometry>
         <mesh filename="package://rppr_robot_description/meshes/q3.stl"/>
       </geometry>
+      <!-- Mesh origin already lies on the joint frame -->
       <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
       <material name="grey">
         <color rgba="0.8 0.8 0.8 1"/>
@@ -84,9 +95,11 @@
 
   <joint name="q4_joint" type="revolute">
     <axis xyz="0 0 1"/>
+    <!-- Upper limit 0.161 rad found in RViz, beyond it the plate cuts into the column -->
     <limit effort="30" velocity="1.0" lower="-1.57079632679" upper="0.161"/>
     <parent link="q3_link"/>
     <child link="q4_link"/>
+    <!-- L8 below the slider, L9 along the tube at theta2 and 42 mm up the q4 axis, z tilted by theta1 = 45 deg -->
     <origin xyz="0.10647 -0.09139 0.18795" rpy="-2.35619449019 0.0 3.14159265359"/>
   </joint>
 
@@ -95,6 +108,7 @@
       <geometry>
         <mesh filename="package://rppr_robot_description/meshes/q4.stl"/>
       </geometry>
+      <!-- Mesh origin already lies on the joint frame -->
       <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
       <material name="grey">
         <color rgba="0.8 0.8 0.8 1"/>

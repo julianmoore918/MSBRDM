@@ -103,39 +103,21 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz_default_plugins/TF
-      Enabled: true
+      Enabled: false
       Filter (blacklist): ""
       Filter (whitelist): ""
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_link:
-          Value: true
-        q1_link:
-          Value: true
-        q2_link:
-          Value: true
-        q3_link:
-          Value: true
-        q4_link:
-          Value: true
-        world:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
       Tree:
-        world:
-          base_link:
-            q1_link:
-              q2_link:
-                q3_link:
-                  q4_link:
-                    {}
+        {}
       Update Interval: 0
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -182,25 +164,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.366236686706543
+      Distance: 1.1461886167526245
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.18412762880325317
-        Y: 0.2901644706726074
-        Z: 0.2827211618423462
+        X: 0.11927871406078339
+        Y: 0.3517214059829712
+        Z: 0.3206211030483246
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.3903972804546356
+      Pitch: 1.0547962188720703
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 4.573579788208008
+      Yaw: 5.763582229614258
     Saved: ~
 Window Geometry:
   Displays:
@@ -218,5 +200,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 699
-  Y: 121
+  X: 667
+  Y: 89
