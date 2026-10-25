@@ -1,0 +1,34 @@
+<?xml version="1.0"?> 
+<launch> 
+<arg name="gui" default="false"/> 
+
+<node 
+pkg="joint_state_publisher" 
+exec="joint_state_publisher" 
+name="joint_state_publisher" 
+output="screen" unless="$(var gui)"/>
+
+<node 
+pkg="joint_state_publisher_gui" 
+exec="joint_state_publisher_gui" 
+name="joint_state_publisher_gui" 
+output="screen" if="$(var gui)"/>
+
+<node 
+pkg="robot_state_publisher" 
+exec="robot_state_publisher" 
+name="robot_state_publisher" output="screen">
+
+<param 
+name="robot_description" 
+value="$(command 'cat $(find-pkg-share robot0_description)/urdf/robot0.urdf') 
+"/> 
+</node>
+
+<node
+pkg="rviz2"
+exec="rviz2"
+name="rviz2"
+output="screen"
+args="-d $(find-pkg-share robot0_bringup)/launch/rviz_config/robot0.rviz"/>
+</launch>
