@@ -180,6 +180,24 @@ def main():
     # - a only: no effect, since all vertices have x = 0.
 
     ################################################################################
+    # Extra task: post-multiply HS2 by a non-homogeneous transform N
+    N = np.eye(4)
+    N[3, :] = [0, 0.5, 0, 1]                  
+
+    HT_list_pre = [N @ HS2 @ H for H in HT_list_1]
+    HT_list_post = [HS2 @ N @ H for H in HT_list_1]
+
+    print("premultiply changes plot?",
+          not all(np.allclose(A[0:3], (HS2 @ H)[0:3]) for A, H in zip(HT_list_pre, HT_list_1)))
+
+    fig_4 = plt.figure()
+    ax = fig_4.add_subplot(111, projection='3d')
+    ax.set_title("HS2 post-multiplied by non-homogeneous N")
+    plot.polygon(ax, HT_list_S2, color='cyan')      # reference: HS2
+    plot.polygon(ax, HT_list_post, color='orange')  # HS2 @ N
+
+
+    ################################################################################
     plt.show()
 
 
