@@ -7,14 +7,14 @@
   <joint name="base_link_joint" type="fixed">
     <parent link="world"/>
     <child link="base_link"/>
-    
-    <!-- TODO:  Set the "origin" propertie with the proper values-->
-
+    <origin xyz="0.3 0.34 0.583" rpy="0 0 3.14159265359"/>
   </joint>
 
   <link name="base_link">
     <visual>
-     <!-- TODO:  Set the "geometry" using the Base.stl file-->
+      <geometry>
+        <mesh filename="package://rppr_robot_description/meshes/Base.stl"/>
+      </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="1.57079632679 0.0 3.1416"/>
       <material name="grey">
         <color rgba="0.8 0.8 0.8 1"/>
@@ -23,16 +23,18 @@
   </link>
 
   <joint name="q1_joint" type="revolute">
-  <axis xyz="0 0 -1"/>
-    <!-- TODO:  Set the "limit" propertie with reasonable values-->
+    <axis xyz="0 0 -1"/>
+    <limit effort="30" velocity="1.0" lower="-1.57079632679" upper="1.57079632679"/>
     <parent link="base_link"/>
     <child link="q1_link"/>
-    <!-- TODO:  Set the "origin" propertie with the proper values-->
+    <origin xyz="0.0 0.11 0.0" rpy="-1.57079632679 0.0 0.0"/>
   </joint>
 
   <link name="q1_link">
     <visual>
-      <!-- TODO:  Set the "geometry" using the q1.stl file-->
+      <geometry>
+        <mesh filename="package://rppr_robot_description/meshes/q1.stl"/>
+      </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <material name="grey">
         <color rgba="0.8 0.8 0.8 1"/>
@@ -41,16 +43,18 @@
   </link>
 
   <joint name="q2_joint" type="prismatic">
-  <axis xyz="0 0 1"/>
-    <!-- TODO:  Set the "limit" propertie with reasonable values-->
+    <axis xyz="0 0 1"/>
+    <limit effort="30" velocity="0.1" lower="0.02" upper="0.1"/>
     <parent link="q1_link"/>
     <child link="q2_link"/>
-    <!-- TODO:  Set the "origin" propertie with the proper values-->
+    <origin xyz="0.08 0.0 0.0" rpy="1.57079632679 0.0 1.57079632679"/>
   </joint>
 
   <link name="q2_link">
     <visual>
-      <!-- TODO:  Set the "geometry" using the q2.stl file-->
+      <geometry>
+        <mesh filename="package://rppr_robot_description/meshes/q2.stl"/>
+      </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
       <material name="grey">
         <color rgba="0.8 0.8 0.8 1"/>
@@ -59,16 +63,18 @@
   </link>
 
   <joint name="q3_joint" type="prismatic">
-  <axis xyz="0 0 1"/>
-    <!-- TODO:  Set the "limit" propertie with reasonable values-->
+    <axis xyz="0 0 1"/>
+    <limit effort="30" velocity="0.1" lower="0.02" upper="0.1"/>
     <parent link="q2_link"/>
     <child link="q3_link"/>
-    <!-- TODO:  Set the "origin" propertie with the proper values-->
+    <origin xyz="0.0815 0.0 0.2177" rpy="1.57079632679 0.0 1.57079632679"/>
   </joint>
 
   <link name="q3_link">
     <visual>
-<!-- TODO:  Set the "geometry" using the q3.stl file-->
+      <geometry>
+        <mesh filename="package://rppr_robot_description/meshes/q3.stl"/>
+      </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
       <material name="grey">
         <color rgba="0.8 0.8 0.8 1"/>
@@ -77,16 +83,18 @@
   </link>
 
   <joint name="q4_joint" type="revolute">
-  <axis xyz="0 0 1"/>
-    <!-- TODO:  Set the "limit" propertie with reasonable values-->
+    <axis xyz="0 0 1"/>
+    <limit effort="30" velocity="1.0" lower="-1.57079632679" upper="0.161"/>
     <parent link="q3_link"/>
     <child link="q4_link"/>
-    <!-- TODO:  Set the "origin" propertie with the proper values-->
+    <origin xyz="0.10647 -0.09139 0.18795" rpy="-2.35619449019 0.0 3.14159265359"/>
   </joint>
 
   <link name="q4_link">
     <visual>
-<!-- TODO:  Set the "geometry" using the q4.stl file-->
+      <geometry>
+        <mesh filename="package://rppr_robot_description/meshes/q4.stl"/>
+      </geometry>
       <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
       <material name="grey">
         <color rgba="0.8 0.8 0.8 1"/>
