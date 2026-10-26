@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<launch>
+
+  <arg name="gui" default="true"/>
+
+  <node
+    pkg="joint_state_publisher"
+    exec="joint_state_publisher"
+    name="joint_state_publisher"
+    output="screen"
+    unless="$(var gui)"/>
+
+  <node
+    pkg="joint_state_publisher_gui"
+    exec="joint_state_publisher_gui"
+    name="joint_state_publisher_gui"
+    output="screen"
+    if="$(var gui)"/>
+
+  <node
+    pkg="robot_state_publisher"
+    exec="robot_state_publisher"
+    name="robot_state_publisher"
+    output="screen">
+    <param
+      name="robot_description"
+      value="$(command 'xacro $(find-pkg-share ur7e_robot_description)/urdf/ur7e_robot.urdf')"/>
+  </node>
+
+  <node
+    pkg="rviz2"
+    exec="rviz2"
+    name="rviz2"
+    output="screen"
+    args="-d $(find-pkg-share ur7e_robot_bringup)/launch/rviz_config/ur7e_robot.rviz"/>
+
+
+</launch>
