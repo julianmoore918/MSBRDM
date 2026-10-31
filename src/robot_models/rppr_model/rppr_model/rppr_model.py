@@ -2,7 +2,7 @@ import sympy as sym
 import numpy as np
 
 import msbrdm_libs.forward_kinematics as FK
-from msbrdm_libs.jacobians import *
+#from msbrdm_libs.jacobians import *
 
 
 class RPPRModel():
@@ -13,7 +13,7 @@ class RPPRModel():
         self.config_joints(nq=4)
         self.config_params()
         self.kinematics(pure_symbolic=pure_symbolic)
-        self.jacobians(pure_symbolic=pure_symbolic)
+        #self.jacobians(pure_symbolic=pure_symbolic)
 
     def config_joints(self, nq: int) -> None:
         """Define symbolic variables for robot joints
@@ -69,6 +69,32 @@ class RPPRModel():
 
         # TODO: Define more intermediate variables here
         # e.g. L13 = L5 + L6 ...
+        L13 = L9*sym.cos(theta2)
+        L14 = (L10+L11)*sym.sin(theta1)
+        L15 = (L10+L11)*sym.cos(theta1)
+        L16 = L9*sym.sin(theta2)
+        L17 = L10/sym.cos(theta1)
+
+        q_1 = sym.Matrix([0, -(L4), 0])
+
+        q_2 = sym.Matrix([-(L5),
+                          -(L4),
+                          0])#
+
+        q_3 = sym.Matrix([-(L5 + q2_offset + L6),
+                        -(L4),
+                        -(L7)])
+
+        q_4  = sym.Matrix([-(L5 + q2_offset + L6),
+                        -(L4 + L13),
+                        -(L7 + q3_offset + L8 + L16)])
+
+        q_ee = q_4 + sym.Matrix([L15 + L12 + c/2, 0, L14])
+
+        cm1 = sym.Matrix([-L5, -L4, 0])
+        cm2 = sym.Matrix([-(L5 + q2_offset), -L4, -L7/2])   # cm2 not dimensioned in Fig. 1, read off
+        cm3 = q_4 + sym.Matrix([L17, 0, 0])
+        cm4 = q_ee
 
         ########################################################################
         # Base transformation
@@ -76,6 +102,10 @@ class RPPRModel():
         # TODO: Define the transformation matrix of the base frame (0) w.r.t. world frame (w)
         # in a sym.Matrix type
         self.T_0_w = sym.eye(4)
+        self.T_0_w = sym.Matrix([[sym.cos(0), -sym.sin(0), 0, L1],
+                                 [sym.sin(0), sym.cos(0), 0, L2],
+                                 [0, 0, 1, L3],
+                                 [0, 0, 0, 1]])
         
         ########################################################################
         # Screw Axes
@@ -84,7 +114,26 @@ class RPPRModel():
         # S: [w, v].T (6 x n)
         omega_list = sym.zeros(3, self.nq)
         v_list = sym.zeros(3, self.nq)
+
+        # joint 1: revolute about y through origin of {0}
+        omega_list[:, 0] = sym.Matrix([0, 1, 0])
+        v_list[:, 0] = -omega_list[:, 0].cross(sym.Matrix([0, 0, 0]))
+
+        # joint 2: prismatic along -x  (omega stays 0)
+        v_list[:, 1] = sym.Matrix([-1, 0, 0])
+
+        # joint 3: prismatic along -z  (omega stays 0)
+        v_list[:, 2] = sym.Matrix([0, 0, -1])
+
+        # joint 4: revolute about tilted axis through point q_4
+        omega_list[:, 3] = sym.Matrix([sym.cos(theta1), 0, sym.sin(theta1)])
+        v_list[:, 3] = -omega_list[:, 3].cross(q_4)
+
+        # stack: rows 0-2 omega, rows 3-5 v
         SList = sym.zeros(6, self.nq)
+        SList[0:3, :] = omega_list
+        SList[3:6, :] = v_list
+
 
         #######################################################################
         # Home configuration
@@ -92,16 +141,26 @@ class RPPRModel():
         # TODO: Define the home transformation M of the end-effector
         # Note: you can choose any rotation you like
         self.M_ee_0 = sym.eye(4)
+        self.M_ee_0[0:3, 3] = q_ee
 
         # TODO: Define the home transformations of each center of mass
         # Note: you can choose any rotation you like
         self.M_cm1_0 = sym.eye(4)
+        self.M_cm1_0[0:3, 3] = q_1
         self.M_cm2_0 = sym.eye(4)
+        self.M_cm2_0[0:3, 3] = q_2
         self.M_cm3_0 = sym.eye(4)
+        self.M_cm3_0[0:3, 3] = q_3
         self.M_cm4_0 = sym.eye(4)
+        self.M_cm4_0[0:3, 3] = q_4
         # Alternative: you can also define them as a list of transformations for
         # loop calculation 
-        # self.M_cms_0 = [sym.eye(4) for _ in range(self.nq)]
+        cm_points = [cm1, cm2, cm3, cm4]
+        self.M_cms_0 = []
+        for p in cm_points:
+            M = sym.eye(4)
+            M[0:3, 3] = p
+            self.M_cms_0.append(M)
             
         ########################################################################
         # Forward Kinematics
@@ -110,15 +169,27 @@ class RPPRModel():
         # to compute the end-effector frame and the center of mass frames
 
         self.T_ee_0 = sym.eye(4)
+        self.T_ee_0 = FK.forward_kinematics(SList, self.M_ee_0, sym.Matrix(self.q))
         self.T_cm1_0 = sym.eye(4)
+        self.T_cm1_0 = FK.forward_kinematics(SList, self.M_cm1_0, sym.Matrix(self.q))
         self.T_cm2_0 = sym.eye(4)
+        self.T_cm2_0 = FK.forward_kinematics(SList, self.M_cm2_0, sym.Matrix(self.q))
         self.T_cm3_0 = sym.eye(4)
+        self.T_cm3_0 = FK.forward_kinematics(SList, self.M_cm3_0, sym.Matrix(self.q))
         self.T_cm4_0 = sym.eye(4)
+        self.T_cm4_0 = FK.forward_kinematics(SList, self.M_cm4_0, sym.Matrix(self.q))
         # Alternative: loop calculation with a list of transformations
-        # self.T_cms_0 = [sym.eye(4) for _ in range(self.nq)]
+        q_vec = sym.Matrix(self.q)
+        self.T_cms_0 = []
+        for i in range(len(self.M_cms_0)):
+            # cm of link i+1 only moves with joints 1..i+1
+            self.T_cms_0.append(FK.forward_kinematics(SList[:, :i+1], self.M_cms_0[i], q_vec[:i+1, :]))
+
+
 
         # TODO: Calculate the end-effector transforamations in the world frame
         self.T_ee_w = sym.eye(4)
+        self.T_ee_w = self.T_0_w @ self.T_ee_0
 
         if pure_symbolic:
             # save the pure symbolic expressions
@@ -136,12 +207,12 @@ class RPPRModel():
         ########################################################################
         # TODO: Generate transformation functions of joint poisition T(q) for
         # numerical updates, use sym.lambdify() function
-        # self.T_ee_w_fn = sym.lambdify(...)
 
-        # self.T_cm1_0_fn = ...
-        # self.T_cm2_0_fn = ...
-        # self.T_cm3_0_fn = ...
-        # self.T_cm4_0_fn = ...
+        self.T_ee_w_fn = sym.lambdify(self.q, self.T_ee_w, 'numpy')
+        self.T_cm1_0_fn = sym.lambdify(self.q, self.T_cm1_0, 'numpy')
+        self.T_cm2_0_fn = sym.lambdify(self.q, self.T_cm2_0, 'numpy')
+        self.T_cm3_0_fn = sym.lambdify(self.q, self.T_cm3_0, 'numpy')
+        self.T_cm4_0_fn = sym.lambdify(self.q, self.T_cm4_0, 'numpy')
 
 
 def main():
