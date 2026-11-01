@@ -209,10 +209,8 @@ class RPPRModel():
         # numerical updates, use sym.lambdify() function
 
         self.T_ee_w_fn = sym.lambdify(self.q, self.T_ee_w, 'numpy')
-        self.T_cm1_0_fn = sym.lambdify(self.q, self.T_cm1_0, 'numpy')
-        self.T_cm2_0_fn = sym.lambdify(self.q, self.T_cm2_0, 'numpy')
-        self.T_cm3_0_fn = sym.lambdify(self.q, self.T_cm3_0, 'numpy')
-        self.T_cm4_0_fn = sym.lambdify(self.q, self.T_cm4_0, 'numpy')
+        self.T_cms_0_fn = [sym.lambdify(self.q, T, 'numpy') for T in self.T_cms_0]
+
 
 
 def main():
