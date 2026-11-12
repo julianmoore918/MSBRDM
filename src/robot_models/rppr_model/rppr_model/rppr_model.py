@@ -2,7 +2,7 @@ import sympy as sym
 import numpy as np
 
 import msbrdm_libs.forward_kinematics as FK
-#from msbrdm_libs.jacobians import *
+from msbrdm_libs.jacobians import *
 
 
 class RPPRModel():
@@ -13,7 +13,7 @@ class RPPRModel():
         self.config_joints(nq=4)
         self.config_params()
         self.kinematics(pure_symbolic=pure_symbolic)
-        #self.jacobians(pure_symbolic=pure_symbolic)
+        self.jacobians(pure_symbolic=pure_symbolic)
 
     def config_joints(self, nq: int) -> None:
         """Define symbolic variables for robot joints
@@ -133,6 +133,8 @@ class RPPRModel():
         SList = sym.zeros(6, self.nq)
         SList[0:3, :] = omega_list
         SList[3:6, :] = v_list
+        self.SList = SList
+
 
 
         #######################################################################
@@ -210,6 +212,33 @@ class RPPRModel():
 
         self.T_ee_w_fn = sym.lambdify(self.q, self.T_ee_w, 'numpy')
         self.T_cms_0_fn = [sym.lambdify(self.q, T, 'numpy') for T in self.T_cms_0]
+
+    def jacobians(self, pure_symbolic: bool = False) -> None:
+        """ Symbolic jacobians of the end-effector and the centers of mass in {0} """
+        q_vec = sym.Matrix(self.q)
+        # poses without numeric substitution if pure_symbolic
+        T_ee_0 = self.Tsym_ee_0 if pure_symbolic else self.T_ee_0
+        T_cms_0 = self.Tsym_cms_0 if pure_symbolic else self.T_cms_0
+
+        # end-effector: all joints
+        self.J_ee_0 = body_jacobian_space_aligned(self.SList, q_vec, T_ee_0)
+
+        # cm_i only moves with joints 1..i, remaining columns stay zero
+        self.J_cms_0 = []
+        for i in range(self.nq):
+            J = sym.zeros(6, self.nq)
+            J[:, :i+1] = body_jacobian_space_aligned(self.SList[:, :i+1], q_vec[:i+1, :], T_cms_0[i])
+            self.J_cms_0.append(J)
+
+        if pure_symbolic:
+            self.Jsym_ee_0 = self.J_ee_0.copy()
+            self.Jsym_cms_0 = [J.copy() for J in self.J_cms_0]
+            self.J_ee_0 = self.J_ee_0.subs(self.params_list)
+            self.J_cms_0 = [J.subs(self.params_list) for J in self.J_cms_0]
+
+        self.J_ee_0_fn = sym.lambdify(self.q, self.J_ee_0, 'numpy')
+        self.J_cms_0_fn = [sym.lambdify(self.q, J, 'numpy') for J in self.J_cms_0]
+
 
 
 

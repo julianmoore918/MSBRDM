@@ -69,3 +69,8 @@ if __name__ == '__main__':
 
 ################################################################################
 # TODO: Answer to the question b.3.2
+# The position p is a vector, so v = (p_k - p_{k-1}) / dt can be compared
+# directly with J_v * qdot. The orientation R is not a vector, so omega is not
+# the difference quotient of any orientation quantity.
+# To validate J_w: use [omega] = Rdot * R^T with Rdot ~ (R_k - R_{k-1}) / dt
+# (or omega = log(R_k * R_{k-1}^T) / dt) and compare it with J_w * qdot.

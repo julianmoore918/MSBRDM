@@ -36,9 +36,11 @@ class UR10Node(Node):
     q2 = np.pi*np.sin(t/4)
     q3 = np.pi/2*np.sin(t/4)
 
-    q1_dot = np.pi/2*np.cos(t/4)
-    q2_dot = np.pi/2*np.cos(t/4)
-    q3_dot = np.pi/4*np.cos(t/4)
+    # corrected: the template had twice the time derivative of q (pi/2, pi/2, pi/4),
+    # d/dt [a*sin(t/4)] = a/4*cos(t/4)
+    q1_dot = np.pi/4*np.cos(t/4)
+    q2_dot = np.pi/4*np.cos(t/4)
+    q3_dot = np.pi/8*np.cos(t/4)
 
     q = np.array([q1, q2, q3])
     qdot = np.array([q1_dot, q2_dot, q3_dot])
