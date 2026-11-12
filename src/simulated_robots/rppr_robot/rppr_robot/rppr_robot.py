@@ -97,33 +97,6 @@ class RPPRRobot():
             transforms.append(ros_utils.matrix_to_transform(T, 'frame_0', f'cm{i+1}', stamp))
         self.br.sendTransform(transforms)
 
-    def jacobians(self, pure_symbolic: bool = False) -> None:
-        """ Symbolic jacobians of the end-effector and the centers of mass in {0} """
-        q_vec = sym.Matrix(self.q)
-        # poses without numeric substitution if pure_symbolic
-        T_ee_0 = self.Tsym_ee_0 if pure_symbolic else self.T_ee_0
-        T_cms_0 = self.Tsym_cms_0 if pure_symbolic else self.T_cms_0
-
-        # end-effector: all joints
-        self.J_ee_0 = body_jacobian_space_aligned(self.SList, q_vec, T_ee_0)
-
-        # cm_i only moves with joints 1..i, remaining columns stay zero
-        self.J_cms_0 = []
-        for i in range(self.nq):
-            J = sym.zeros(6, self.nq)
-            J[:, :i+1] = body_jacobian_space_aligned(self.SList[:, :i+1], q_vec[:i+1, :], T_cms_0[i])
-            self.J_cms_0.append(J)
-
-        if pure_symbolic:
-            self.Jsym_ee_0 = self.J_ee_0.copy()
-            self.Jsym_cms_0 = [J.copy() for J in self.J_cms_0]
-            self.J_ee_0 = self.J_ee_0.subs(self.params_list)
-            self.J_cms_0 = [J.subs(self.params_list) for J in self.J_cms_0]
-
-        self.J_ee_0_fn = sym.lambdify(self.q, self.J_ee_0, 'numpy')
-        self.J_cms_0_fn = [sym.lambdify(self.q, J, 'numpy') for J in self.J_cms_0]
-
-
     def update_differential_kinematics(self, dt: float) -> None:
         """Update the differential kinematics of the robot and verify velocities
 
