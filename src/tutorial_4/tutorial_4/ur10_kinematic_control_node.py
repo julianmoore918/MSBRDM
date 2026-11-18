@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+from time import time
+
 import numpy as np
 
 import rclpy
@@ -19,11 +21,15 @@ class UR10KinematicControlNode(Node):
         self.model = UR10Model3DOF()
         q_init = np.array([0, 0, np.pi/2])
         self.robot = UR10Robot3DOF(self.model, q_init=q_init, node=self)
-        self.controller = UR10KinematicController3DOF(self.model, q_init=q_init)
+        self.controller = UR10KinematicController3DOF(self.model, q_init=q_init, node=self)
+
 
         # set goal
-        x_goal = np.array([0.1, 0.0, 0.5])
-        
+        x_goal = np.array([0.9, 0.256, 1.0])
+        self.controller.set_goal_abs(x_goal)
+        self.controller.set_duration(10.0)
+        self.controller.set_w_threshold(0.01)
+
         # start controller
         self.controller.start()
 
@@ -32,21 +38,27 @@ class UR10KinematicControlNode(Node):
         # 100 Hz timer
         self.timer = self.create_timer(0.01, self.update)
 
+
     def update(self):
         # time
         time = self.get_clock().now()
         dt = time - self.prev_time
+        dt_sec = dt.nanoseconds * 1e-9
         self.prev_time = time
 
         # TODO: get current joint states from robot
-        joint_states =
+        joint_states = self.robot.get_joint_states()
 
         # TODO: update controller with current joint states
-        u =
+        u = self.controller.update(joint_states, time, dt)
 
         # TODO: feed the control input to the robot by calling the command function
+        self.robot.command_vel_interface(u, dt)
 
-        # TODO: Visualize manipulability ellipsoid
+        # TODO: Visualize manipulability ellipsoid 
+        self.robot.update_kinematics()
+        self.robot.update_differential_kinematics(dt_sec)
+         
         
 def main(args=None):
     rclpy.init(args=args)

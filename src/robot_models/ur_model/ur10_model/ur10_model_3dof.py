@@ -13,6 +13,7 @@ class UR10Model3DOF:
         self.kinematics()
         self.jacobians()
 
+
     def config_joints(self, nq: int) -> None:
         """Define symbolic variables for robot joints
 
@@ -65,6 +66,7 @@ class UR10Model3DOF:
         # S: [w, v].T (6 x n), revolute joints: v = -w x q_point
         omega_list = sym.zeros(3, self.nq)
         v_list = sym.zeros(3, self.nq)
+
 
         # points on the joint axes in the home configuration (arm upright, Fig. 4)
         q_1 = sym.Matrix([0, 0, 0])             # base axis
@@ -151,6 +153,7 @@ class UR10Model3DOF:
         # TODO: Generate jacobian functions for numerical evaluation
         self.J_ee_0_fn = sym.lambdify(self.q, self.J_ee_0, 'numpy')
         self.J_ee_w_fn = sym.lambdify(self.q, self.J_ee_w, 'numpy')
+
 
 
 if __name__ == '__main__':

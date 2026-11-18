@@ -11,6 +11,7 @@ from visualization_msgs.msg import Marker
 # tf_transformations is not available in ROS 2 Jazzy, use SciPy for the quaternion
 from scipy.spatial.transform import Rotation
 import msbrdm_libs.ros_utils as ros_utils
+from rclpy.duration import Duration
 
 
 class UR10Robot3DOF():
@@ -210,6 +211,17 @@ class UR10Robot3DOF():
         self.joint_msg.position = q.tolist()
         self.joint_msg.velocity = qdot.tolist()
         self.joint_states_pub.publish(self.joint_msg)
+
+    def command_vel_interface(self, u: np.ndarray, dt: Duration) -> None:
+        dt_sec = dt.nanoseconds * 1e-9
+        if dt_sec <= 0.0:
+            return
+        self.qddot = (u - self.qdot) / dt_sec
+        self.qdot = u
+        self.q = self.q + u * dt_sec
+        # publish the new joint states
+        self.publish_joint_states()
+
 
     @staticmethod
     def vec_to_vector3(v: np.ndarray) -> Vector3:

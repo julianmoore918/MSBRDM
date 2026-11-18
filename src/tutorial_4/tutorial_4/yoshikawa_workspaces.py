@@ -28,7 +28,8 @@ class ManipulabilityVisualizer(Node):
         self.robot = UR10Robot3DOF(model, node=self)
 
         # TODO: set the threshold for singularity
-        self.threshold = 
+        # 0.1 ≈ 24% of w_max ≈ 0.42; chosen to visualise the near-singular regions
+        self.threshold = 0.1
 
         # colormap
         self.cmap = cc.rainbow_bgyrm_35_85_c69
@@ -44,17 +45,20 @@ class ManipulabilityVisualizer(Node):
             # generate random joint configuration
             q = np.random.uniform(-np.pi, np.pi, 3)
             # TODO: calculate the end-effector position x_ee_w from the model
-            x =
+            T_ee_w = np.array(self.robot.model.T_ee_w_fn(*q), dtype=float)
+            x = T_ee_w[0:3, 3]
+
 
             # TODO: calculate the end-effector Jacobian J_ee_w from the model
-            J = 
+            J = np.array(self.robot.model.J_ee_w_fn(*q), dtype=float)[3:6, :]
 
             # TODO: calculate the manipulability index with the linear part of Jacobian
-            w =
+            w = np.sqrt(max(np.linalg.det(J @ J.T), 0.0))
 
             # TODO: save the maximum manipulability index and the corresponding joint configuration
-            w_max
-            q_max
+            if w > w_max:
+                w_max = w
+                q_max = q
 
             # save the position and manipulability index into the dataframe
             df.loc[i] = [x[0], x[1], x[2], w]
@@ -62,7 +66,9 @@ class ManipulabilityVisualizer(Node):
         self.q_max = q_max
 
         # TODO: print out the maximum manipulability index and the corresponding joint configuration
-        
+        self.get_logger().info(
+            f'Maximum manipulability index w_max = {w_max:.4f} at '
+            f'q_max = {np.round(q_max, 3)} rad ({np.round(np.degrees(q_max), 1)} deg)')
 
         # create the point clouds
         self.singularity_cloud, self.workspace_cloud = self.create_clouds(df)
@@ -92,28 +98,40 @@ class ManipulabilityVisualizer(Node):
 
         for i in range(len(w)):
             # TODO: calculate the color index (0-255) based on the manipulability index (0-wmax)
-            color_index =
+            color_index = int((1.0 - w[i] / wmax) * 255)
             # TODO: retrieve the RGB values from the colormap with the color index,
             # and convert the values to 0-255 range intergers
-            r, g, b =
+            r, g, b = (np.array(self.cmap[color_index][0:3]) * 255).astype(int)
             a = 255
             # pack the rbga values into a 32-bit integer format
             rgba = struct.unpack('I', struct.pack('BBBB', b, g, r, a))[0]
 
             # TODO: create a point with color as the fields [x, y, z, rgba]
             p = []
+            p.append(pt[i][0])
+            p.append(pt[i][1])
+            p.append(pt[i][2])
+            p.append(rgba)
 
             # TODO: save the point into either singularity_points or workspace_points
             # based on the manipulability index
+            if w[i] < self.threshold:
+                singularity_points.append(p)
+            else:
+                workspace_points.append(p)
             
 
         # TODO: create point clouds with the fields and points using pc2.create_cloud()
-        
+        singularity_cloud = pc2.create_cloud(Header(frame_id='world'), fields, singularity_points)
+        workspace_cloud = pc2.create_cloud(Header(frame_id='world'), fields, workspace_points)
         return singularity_cloud, workspace_cloud
 
     def publish(self):
         #TODO: update the timestamp of the point clouds, and update the point clouds
-
+        self.singularity_cloud.header.stamp = self.get_clock().now().to_msg()
+        self.workspace_cloud.header.stamp = self.get_clock().now().to_msg()
+        self.singularity_cloud_pub.publish(self.singularity_cloud)
+        self.workspace_cloud_pub.publish(self.workspace_cloud)
 
     def update(self):
         # publish the point clouds
@@ -136,6 +154,23 @@ def main(args=None):
     finally:
         node.destroy_node()
         rclpy.try_shutdown()
+
+    # Q6: analytic maximum of the manipulability index
+    # With L34 = L3 + L4, the linear Jacobian of the 3-DOF UR10 gives
+    #   w = |det(J_v)| = L2 * L34 * |sin(q3)| * |L2 sin(q2) + L34 sin(q2 + q3)|
+    # - q1 does not appear: w is the same for every base rotation.
+    # - The last factor is the horizontal distance r of the wrist from the base
+    #   axis. For a given q3 it is largest (= shoulder-wrist distance
+    #   d = sqrt(L2^2 + L34^2 + 2 L2 L34 cos(q3))) when the line from the
+    #   shoulder to the wrist is horizontal.
+    # - So we maximise f(q3) = sin(q3) * sqrt(a + b cos(q3)) with
+    #   a = L2^2 + L34^2, b = 2 L2 L34. Setting df/dq3 = 0 gives
+    #   3b c^2 + 2a c - b = 0  ->  c = cos(q3) = (-a + sqrt(a^2 + 3b^2)) / (3b)
+    # With L2 = 0.6127, L34 = 0.6873:
+    #   cos(q3) = 0.332  ->  q3 = +-70.6 deg,  d = 1.062 m
+    #   w_max = L2 * L34 * sin(q3) * d = 0.4218
+    # The sampled maximum (~0.42) matches. Being random samples, it is always
+    # slightly below the analytic value.
 
 
 if __name__ == '__main__':
